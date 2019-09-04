@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
@@ -17,9 +18,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = JpatestcaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WebAppConfiguration
+//@WebAppConfiguration
+@AutoConfigureMockMvc
 @Rollback
 @Transactional
 public class JpatestcaseApplicationTests {
@@ -37,7 +44,6 @@ public class JpatestcaseApplicationTests {
     public void test_user_not_exist() throws Exception {
         // parameter
         String email = "halfdev@gmail.com";
-
         // request
         mockMvc.perform(
                 get("/user/login")
@@ -45,14 +51,13 @@ public class JpatestcaseApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
-                .andExpect(jsonPath("$.message").value("user is not exist !!"));
+                .andExpect(jsonPath("$.message").value("user is not exist"));
     }
 
     @Test
     public void test_user_exist() throws Exception {
         // parameter
         String email = "user@test.com";
-
         // insert user
         User user = new User();
         user.setType(User.USER_TYPE.USER);
@@ -72,6 +77,6 @@ public class JpatestcaseApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.message").value("user exist"));
+                .andExpect(jsonPath("$.message").value("userExist"));
     }
 }
